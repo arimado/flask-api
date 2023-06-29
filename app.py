@@ -1,6 +1,13 @@
+import os
+import dotenv
 from flask import Flask, request
+from langchain.llms import OpenAI
+
 
 app = Flask(__name__)
+
+apiKey = os.getenv('OPEN_AI_API_KEY')
+os.environ['OPENAI_API_KEY'] = apiKey
 
 stores = [
     {

@@ -5,6 +5,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import AgentType, initialize_agent, load_tools
+from modules._0_module import hello_world
 
 
 app = Flask(__name__)
@@ -20,12 +21,15 @@ title_template = PromptTemplate(
     input_variables=['topic'],
     template="The synopsis for a book about {topic}.",
 )
-
 title_memory = ConversationBufferMemory(
     input_key='topic', memory_key='chat_history')
-
 title_chain = LLMChain(llm=llm, prompt=title_template,
                        verbose=True, output_key='title', memory=title_memory)
+
+story_writer_template = """/
+You write dialogue heavy stories.
+What is a good name for a company that makes {product}?
+"""
 
 tools = load_tools(["serpapi", "llm-math"], llm=llm)
 
@@ -50,6 +54,11 @@ stores = [
 ]
 
 
+@app.get("/module")
+def module():
+    return {"module": hello_world(1, 2)}
+
+
 @app.post("/chat")
 def chat():
     request_data = request.get_json()
@@ -58,6 +67,7 @@ def chat():
     return {"response": response}
 
 
+@app.post("/module")
 @app.post("/search")
 def search():
     # get search pramater from request

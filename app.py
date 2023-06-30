@@ -6,6 +6,7 @@ from langchain.chains import LLMChain, ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import AgentType, initialize_agent, load_tools
 from modules._0_module import hello_world
+from modules._1_prompts import get_prompt_for_function, get_source_code
 
 
 app = Flask(__name__)
@@ -52,6 +53,11 @@ stores = [
         ]
     }
 ]
+
+
+@app.get("/prompt/function")
+def function_prompt():
+    return {"prompt": get_prompt_for_function("function_name", get_source_code)}
 
 
 @app.get("/module")

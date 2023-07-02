@@ -7,7 +7,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.agents import AgentType, initialize_agent, load_tools
 from modules._0_module import hello_world
 from modules._1_prompts import get_prompt_for_function, get_source_code
-from modules._2_prompts_fewshot import fewshot_one, fewshot_two
+from modules._2_prompts_fewshot import fewshot_one, fewshot_two, fewshot_three
 
 
 app = Flask(__name__)
@@ -54,6 +54,11 @@ stores = [
         ]
     }
 ]
+
+
+@app.get("/prompt/fewshot/3")
+def function_prompt_fewshot_three():
+    return {"prompt": fewshot_three()}
 
 
 @app.get("/prompt/fewshot/2")

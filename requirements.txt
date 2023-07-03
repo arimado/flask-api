@@ -4,3 +4,4 @@ python-dotenv
 openai
 google-search-results
 chromadb
+tiktoken

@@ -8,14 +8,17 @@ from langchain.agents import AgentType, initialize_agent, load_tools
 from modules._0_module import hello_world
 from modules._1_prompts import get_prompt_for_function, get_source_code
 from modules._2_prompts_fewshot import fewshot_one, fewshot_two, fewshot_three
+from modules._3_prompts_fewshot_cm import fewshot_cm
+from constants import apiKey, serpapi_api_key
+from projects.dnd import init_dnd
 
 
 app = Flask(__name__)
 
-apiKey = os.getenv('OPEN_AI_API_KEY')
-os.environ['OPENAI_API_KEY'] = apiKey
-serpapi_api_key = os.getenv('SERPAPI_API_KEY')
-os.environ['SERPAPI_API_KEY'] = serpapi_api_key
+# apiKey = os.getenv('OPEN_AI_API_KEY')
+# os.environ['OPENAI_API_KEY'] = apiKey
+# serpapi_api_key = os.getenv('SERPAPI_API_KEY')
+# os.environ['SERPAPI_API_KEY'] = serpapi_api_key
 llm = OpenAI(temperature=1.4)
 llmSearch = OpenAI(temperature=0)
 
@@ -54,6 +57,16 @@ stores = [
         ]
     }
 ]
+
+
+@app.get("/project/dnd")
+def project_dnd():
+    return {"answer": init_dnd()}
+
+
+@app.get("/prompt/fewshot/4")
+def function_prompt_fewshot_cm():
+    return {"answer": fewshot_cm()}
 
 
 @app.get("/prompt/fewshot/3")

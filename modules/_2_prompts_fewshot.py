@@ -106,4 +106,11 @@ def fewshot_three():
         for k, v in example.items():
             print(f"{k}: {v}")
 
-    return "value"
+    prompt = FewShotPromptTemplate(
+        example_selector=example_selector,
+        example_prompt=example_prompt,
+        suffix="Question: {input}",
+        input_variables=["input"]
+    )
+
+    return prompt.format(input="Who was the father of Mary Ball Washington?")

@@ -10,7 +10,7 @@ from modules._1_prompts import get_prompt_for_function, get_source_code
 from modules._2_prompts_fewshot import fewshot_one, fewshot_two, fewshot_three
 from modules._3_prompts_fewshot_cm import fewshot_cm
 from constants import apiKey, serpapi_api_key
-from projects.dnd import init_dnd
+from projects.dnd import init_dnd, init_dnd_loop
 
 
 app = Flask(__name__)
@@ -57,6 +57,11 @@ stores = [
         ]
     }
 ]
+
+
+@app.get("/project/dnd/loop")
+def project_dnd_loop():
+    return {"answer": init_dnd_loop()}
 
 
 @app.get("/project/dnd")

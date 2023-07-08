@@ -5,3 +5,5 @@ openai
 google-search-results
 chromadb
 tiktoken
+termcolor
+faiss-cpu

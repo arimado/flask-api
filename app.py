@@ -11,7 +11,7 @@ from modules._2_prompts_fewshot import fewshot_one, fewshot_two, fewshot_three
 from modules._3_prompts_fewshot_cm import fewshot_cm
 from constants import apiKey, serpapi_api_key
 from projects.dnd import init_dnd, init_dnd_loop
-from projects.gen_agent import get_faiss, ask_tony, start_day
+from projects.gen_agent import get_faiss, ask_tony, ask_melfi, start_day, start_convo
 
 
 app = Flask(__name__)
@@ -60,10 +60,24 @@ stores = [
 ]
 
 
+@app.get("/project/genagent/convo")
+def gen_day_convo():
+    start_convo()
+    return {"answer": "❤️"}
+
+
 @app.get("/project/genagent/day/tony")
 def gen_day_tony():
     start_day()
     return {"answer": "❤️"}
+
+
+@app.post("/project/genagent/ask/melfi")
+def gen_ask_melfi():
+    request_data = request.get_json()
+    message = request_data["question"]
+    response = ask_melfi(message)
+    return {"answer": response}
 
 
 @app.post("/project/genagent/ask/tony")

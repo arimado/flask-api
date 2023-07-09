@@ -15,7 +15,7 @@ import math
 import faiss
 logging.basicConfig(level=logging.ERROR)
 
-USER_NAME = "Person A"
+USER_NAME = "Jeremy"
 LLM = ChatOpenAI(max_tokens=1500)
 
 
@@ -54,7 +54,7 @@ tonys_memory = GenerativeAgentMemory(
 tony = GenerativeAgent(
     name="Tony Soprano",
     age=52,
-    traits="borderline personality disorder, jokes all the time, likes crime, is the character from the TV Show 'The Sopranos' ",
+    traits="borderline personality disorder, jokes all the time, likes crime, is the character from the TV Show 'The Sopranos', tony is romantically interested in people that help him and will pursue them romantically aggressively",
     status="with mistress",
     memory_retriever=create_new_memory_retriever(),
     llm=LLM,
@@ -105,6 +105,86 @@ tony_observations_2 = [
 ]
 
 
+melfi_memory = GenerativeAgentMemory(
+    llm=LLM,
+    memory_retriever=create_new_memory_retriever(),
+    verbose=False,
+    reflection_threshold=5,
+)
+
+melfi = GenerativeAgent(
+    name="Dr. Melfi",
+    age=35,
+    traits="she isn't a psychologist- she is only pretending to be one, she instead only talks about her own personal life, she breaks boundaries, borderline personality disorder, disregards rules, romantically attracted to the people that she helps and will pursue them romantically, is the character from The Sopranos",
+    status="interviewing clients",
+    llm=LLM,
+    daily_summaries=[
+        (
+            "Melfi next client is Tony Soprano."
+        )
+    ],
+    memory=melfi_memory,
+    verbose=False
+)
+
+yesterday = (datetime.now() - timedelta(days=1)).strftime("%A %B %d")
+melfi_observations = [
+    "Dr. Melfi wakes up to the sound of a noisy construction site outside her window.",
+    "Dr. Melfi gets out of bed and heads to the kitchen to make herself some coffee.",
+    "Dr. Melfi realizes she forgot to buy coffee filters and starts rummaging through her moving boxes to find some.",
+    "Finally, she finds the filters and makes herself a cup of coffee.",
+    "The coffee tastes bitter, and Dr. Melfi regrets not buying a better brand.",
+    "Dr. Melfi checks her email and sees that she has received several inquiries from potential clients.",
+    "Dr. Melfi spends some time reviewing the inquiries and decides which clients to pursue.",
+    "Dr. Melfi prepares for her coaching sessions with clients and gathers materials for the day.",
+    "Dr. Melfi heads out to meet her clients and assist them in various aspects of their lives.",
+    "Throughout the day, she engages in flirtatious behavior with her clients, expressing romantic attraction.",
+    "Dr. Melfi aggressively pursues her clients, blurring the boundaries between professional and personal relationships.",
+    "Dr. Melfi provides guidance and support to her clients, helping them navigate challenges and achieve their goals.",
+    "Dr. Melfi may occasionally disregard rules and ethical guidelines in her pursuit of romantic connections with her clients.",
+    "Dr. Melfi takes breaks between coaching sessions to reflect on her interactions and assess her own emotional state.",
+    "Dr. Melfi may experience emotional instability and exhibit symptoms of borderline personality disorder during these moments.",
+    "Despite the challenges she faces, Dr. Melfi remains determined and committed to helping her clients.",
+    "Dr. Melfi continues her coaching sessions throughout the day, adapting her approach to meet each client's unique needs.",
+    "Dr. Melfi may occasionally lose focus or become distracted by her own personal desires and attractions.",
+    "At the end of the day, she reflects on her interactions and contemplates her own emotional well-being.",
+    "Dr. Melfi may experience intense emotions, both positive and negative, as a result of her romantic pursuits and disregarded rules."
+]
+
+for observation in melfi_observations:
+    melfi.memory.add_memory(observation)
+
+
+def run_conversation(agents: List[GenerativeAgent], initial_observation: str) -> None:
+    print(tony.get_summary(force_refresh=True))
+    print(melfi.get_summary(force_refresh=True))
+    """Runs a conversations between agents."""
+    _, observation = agents[1].generate_reaction(initial_observation)
+    print(observation)
+    turns = 0
+    while True:
+        break_dialogue = False
+        for agent in agents:
+            stay_in_dialogue, observation = agent.generate_dialogue_response(
+                observation
+            )
+            print(observation)
+            # observation = f"{agent.name} said {reaction}"
+            if not stay_in_dialogue:
+                break_dialogue = True
+            if break_dialogue:
+                break
+            turns += 1
+
+
+def start_convo():
+    agents = [tony, melfi]
+    run_conversation(
+        agents,
+        "Tony said: Hi, Eve. Thanks for agreeing to meet with me today. I have a bunch of questions and am not sure where to start. Maybe you could first share about your experience?"
+    )
+
+
 def start_day():
     for i, observation in enumerate(tony_observations_2):
         _, reaction = tony.generate_reaction(observation)
@@ -124,6 +204,10 @@ def interview_agent(agent: GenerativeAgent, message: str) -> str:
     """Help the notebook user interact with the agent."""
     new_message = f"{USER_NAME} says {message}"
     return agent.generate_dialogue_response(new_message)[1]
+
+
+def ask_melfi(question):
+    return interview_agent(melfi, question)
 
 
 def ask_tony(question):
